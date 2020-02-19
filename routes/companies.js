@@ -41,6 +41,54 @@ router.get("/", async function(req, res, next) {
   }
 });
 
+router.post("/", async function(req, res, next) {
+  try {
+    let { handle, name, num_employees, description, logo_url }  = req.body; 
+    let company = await Company.create({ handle, name, num_employees, description, logo_url});
+
+    return res.json({company});
+
+  }
+  catch (err) {
+    return next(err)
+  }
+});
+
+router.get("/:handle", async function(req, res, next) {
+  try {
+    handle = req.params.handle
+    let company = await Company.getHandle(handle);
+    
+    return res.json({ company });
+  }
+  catch (err) {
+    return next(err)
+  }
+});
+
+router.patch("/:handle", async function(req, res, next) {
+  try {
+    let handle =req.params.handle; // this will be `key` in helper function
+    let items = req.body;
+
+    let company = await Company.update(handle, items);
+
+    return res.json({ company });
+  } 
+  catch (err) {
+    return next(err);
+  }
+});
+
+router.delete("/:handle", async function(req, res, next) {
+  try {
+    await Company.delete(req.params.handle);
+    return res.json({ message: "company deleted" });
+  }
+  catch (err) {
+    return next(err);
+  }
+})
 
 
 
