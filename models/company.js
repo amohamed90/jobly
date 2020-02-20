@@ -4,39 +4,48 @@ const sqlForPartialUpdate = require("../helpers/partialUpdate");
 
 class Company {
 
-  static async all() {
-    const result = await db.query(`SELECT handle, name FROM companies`);
-    return result.rows;
-  }
+  static async all(query) {
+    let queryString = `SELECT handle, name FROM companies`;
+    let whereTerms = [];
+    let values = [];
 
-  static async search(string) {
-    const result = await db.query(`SELECT handle, name FROM companies WHERE name=$1`, [string])
-    return result.rows;
-  }
+    if (query.min_employees && query.max_employees) {
+      let min = Number(query.min_employees);
+      let max = Number(query.max_employees);
 
-  static async minEmployees(num) {
-    if(isNaN(num)) {
-      throw new ExpressError("Please enter a valid number", 400);
+      if (min > max) {
+        throw new ExpressError("min can't be more than max", 400)
+      }
     }
-    const result = await db.query(`SELECT handle, name FROM companies WHERE num_employees > $1`, [num]);
+    if(query.search) {
+      values.push(`%${query.search}`);
+      whereTerms.push(`name ILIKE $${values.length}`);
+    }
+
+    if (query.min_employees) {
+      if (isNaN(query.min_employees)) {
+        throw new ExpressError ("parameter needs to be a number", 400);
+      }
+      values.push(Number(query.min_employees));
+      whereTerms.push(`num_employees <= $${values.length}`);
+    }
+
+    if (query.max_employees) {
+      if (isNaN(query.min_employees)) {
+        throw new ExpressError("parameter needs to be a number", 400);
+      }
+      values.push(Number(query.max_employees));
+      whereTerms.push(`num_employees <= $${values.length}`);
+    }
+
+    if (whereTerms.length > 0) {
+      queryString += " WHERE ";
+    }
+    const finalQuery = queryString + whereTerms.join(" AND ");
+    const result = await db.query(finalQuery, values);
     return result.rows;
   }
 
-  static async maxEmployees(num) {
-    if(isNaN(num)) {
-      throw new ExpressError("Please enter a valid number", 400);
-    }
-    const result = await db.query(`SELECT handle, name FROM companies WHERE num_employees < $1`, [num]);
-    return result.rows;
-  }
-
-  static async minMaxEmployees(min, max) {
-    if(isNaN(num)) {
-      throw new ExpressError("Please enter a valid number", 400);
-    }
-    const result = await db.query(`SELECT handle, name FROM companies WHERE num_employees >= $1 AND num_employees <= $2`, [min, max]);
-    return result.rows;
-  }
 
   static async create({ handle, name, num_employees, description, logo_url }) {
     const result = await db.query(
@@ -55,7 +64,7 @@ class Company {
 
   static async getHandle(handle) {
     const result = await db.query(
-      `SELECT 
+      `SELECT
         handle,
         name,
         num_employees,
@@ -79,7 +88,7 @@ class Company {
       handle
     );
     const result = await db.query(query, values);
-    
+
     if(!result.rows[0]) {
       throw new ExpressError(`No such company: ${handle}`, 404);
     }
@@ -87,7 +96,7 @@ class Company {
   }
 
   static async delete(handle) {
-    let result = await db.query( 
+    let result = await db.query(
       `DELETE FROM companies
         WHERE handle=$1
         RETURNING handle`,
