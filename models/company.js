@@ -81,12 +81,7 @@ class Company {
   }
 
   static async update(handle, items) {
-    let {query, values} = sqlForPartialUpdate(
-      "companies",
-      items,
-      "handle",
-      handle
-    );
+    let {query, values} = sqlForPartialUpdate("companies",items,"handle",handle);
     const result = await db.query(query, values);
 
     if(!result.rows[0]) {
