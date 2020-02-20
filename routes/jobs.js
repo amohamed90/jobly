@@ -8,9 +8,9 @@ const updateJobSchema = require("../schemas/updateJobSchema");
 
 router.get("/", async function (req, res, next) {
   try {
-    let results = await Job.all(req.query);
+    let jobs = await Job.all(req.query);
     return res.json({
-      "jobs": results
+      jobs
     });
   } catch (err) {
     return next(err);
