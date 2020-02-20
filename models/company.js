@@ -63,7 +63,7 @@ class Company {
   }
 
   static async getHandle(handle) {
-    const result = await db.query(
+    const company = await db.query(
       `SELECT
         handle,
         name,
@@ -74,11 +74,23 @@ class Company {
         WHERE handle=$1`,
         [handle]
     );
-    if(!result.rows[0]) {
+    const jobs = await db.query(
+      `SELECT
+        id,
+        title,
+        salary,
+        equity
+        FROM jobs
+        WHERE company_handle=$1`,
+        [handle]
+    )
+    const output = { ...company.rows[0], "jobs": jobs.rows}
+    
+    if(!output) {
       throw new ExpressError(`No such company: ${handle}`, 404);
     }
-    return result.rows[0];
-  }
+    return output;
+    }
 
   static async update(handle, items) {
     let {query, values} = sqlForPartialUpdate("companies",items,"handle",handle);
