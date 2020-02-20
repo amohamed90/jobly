@@ -47,7 +47,7 @@ describe("Test Company Routes", () => {
     let resp = await request(app)
       .get("/companies?min_employees=10&max_employees=5");
       expect(resp.status).toBe(400);
-  })
+  });
 
   test("POST /companies. Can create new company", async () => {
     let resp = await request(app)
@@ -61,7 +61,7 @@ describe("Test Company Routes", () => {
       });
       expect(resp.status).toBe(200);
       expect(Object.keys(resp.body)).toHaveLength(1);
-  })
+  });
 
   test('GET /companies/:handle. Can get a specific company by handle', async () => {
     let resp = await request(app)
@@ -78,7 +78,7 @@ describe("Test Company Routes", () => {
     expect(resp.status).toBe(404);
   });
 
-  test("PUT /companies. Can update company", async () => {
+  test("PATCH /companies. Can update company", async () => {
     let resp = await request(app)
       .patch("/companies/amzn")
       .send({
@@ -101,4 +101,4 @@ describe("Test Company Routes", () => {
 
 afterAll(async function () {
   await db.end();
-})
+});
