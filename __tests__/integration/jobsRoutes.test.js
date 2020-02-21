@@ -22,7 +22,7 @@ let job1= {
 };
 let id;
 describe("Test Jobs Routes", () => {
-  
+
   beforeEach(async () => {
     await db.query('DELETE FROM companies');
     await db.query('DELETE FROM jobs');
@@ -43,10 +43,10 @@ describe("Test Jobs Routes", () => {
       let resp = await request(app)
           .get("/jobs");
       expect(resp.status).toBe(200);
-      expect(resp.body).toEqual({ 
+      expect(resp.body).toEqual({
         jobs: [{
-                "company_handle": "amzn",
-                "title": "test_title"
+                company_handle: "amzn",
+                title: "test_title"
         }]});
     });
 
@@ -54,7 +54,7 @@ describe("Test Jobs Routes", () => {
       let resp = await request(app)
           .get("/jobs?search=test_title");
       expect(resp.status).toBe(200);
-      expect(resp.body).toEqual({ 
+      expect(resp.body).toEqual({
         jobs: [{
                 "company_handle": "amzn",
                 "title": "test_title"
@@ -94,10 +94,10 @@ describe("Test Jobs Routes", () => {
         expect(Object.keys(resp.body)).toHaveLength(1);
        let getResp = await request(app)
           .get("/jobs");
-    
+
           expect(Object.keys(getResp.body.jobs)).toHaveLength(2);
 
-          
+
     });
 
 

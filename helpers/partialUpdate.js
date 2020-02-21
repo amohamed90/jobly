@@ -1,3 +1,6 @@
+const { BCRYPT_WORK_FACTOR } = require("../config");
+const bcrypt = require("bcrypt");
+
 /**
  * Generate a selective update query based on a request body:
  *

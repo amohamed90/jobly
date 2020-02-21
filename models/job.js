@@ -39,12 +39,7 @@ class Job {
   }
 
 
-  static async create({
-    title,
-    salary,
-    equity,
-    company_handle
-  }) {
+  static async create({ title, salary, equity, company_handle}) {
     const result = await db.query(
       `INSERT INTO jobs (
           title,
@@ -54,13 +49,15 @@ class Job {
         VALUES ($1, $2, $3, $4)
         RETURNING title, company_handle`,
       [title,
-       salary,
-       equity,
-       company_handle
+        salary,
+        equity,
+        company_handle
       ]);
 
     return result.rows[0];
   }
+
+
 
   static async getId(id) {
     const result = await db.query(
@@ -117,7 +114,7 @@ class Job {
       [id]
     );
     if (result.rows.length === 0) {
-      throw new ExpressError(`This is no company with handle: ${id}`, 404);
+      throw new ExpressError(`There is no company with handle: ${id}`, 404);
     }
   }
 
