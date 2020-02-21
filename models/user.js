@@ -46,6 +46,23 @@ class User {
 
   }
 
+  static async authenticate(username, password) {
+    
+    const result = await db.query(
+      `SELECT password, username, is_admin
+         FROM users
+         WHERE username = $1`,
+      [username]
+    )
+    const user = result.rows[0]
+
+    if (user && await bcrypt.compare(password, user.password)) {
+      return user;
+    };
+
+
+  }
+
   static async getUserByUsername(username) {
     const user = await db.query(`SELECT username,
                                     first_name,

@@ -6,7 +6,9 @@ const jsonschema = require("jsonschema");
 const jobSchema = require("../schemas/jobSchema");
 const updateJobSchema = require("../schemas/updateJobSchema");
 
-router.get("/", async function (req, res, next) {
+const { authenticate } = require("../middleware/auth");
+
+router.get("/", authenticate, async function (req, res, next) {
   try {
     let jobs = await Job.all(req.query);
     return res.json({
@@ -36,8 +38,8 @@ router.post("/", async function (req, res, next) {
   }
 });
 
-router.get("/:id", async function (req, res, next) {
-  try {
+router.get("/:id", authenticate, async function (req, res, next) {
+  try { 
     id = req.params.id
     let job = await Job.getId(id);
 

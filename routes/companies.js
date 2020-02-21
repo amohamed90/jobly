@@ -6,7 +6,9 @@ const jsonschema = require("jsonschema");
 const companySchema = require("../schemas/companySchema");
 const updateCompanySchema = require("../schemas/updateCompanySchema");
 
-router.get("/", async function(req, res, next) {
+const { authenticate } = require("../middleware/auth");
+
+router.get("/", authenticate, async function(req, res, next) {
   try {
     let results = await Company.all(req.query);
     return res.json({"companies": results});
@@ -33,7 +35,7 @@ router.post("/", async function(req, res, next) {
   }
 });
 
-router.get("/:handle", async function(req, res, next) {
+router.get("/:handle", authenticate, async function(req, res, next) {
   try {
     handle = req.params.handle
     let company = await Company.getHandle(handle);
